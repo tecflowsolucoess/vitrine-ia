@@ -5,8 +5,7 @@ import google.generativeai as genai
 st.set_page_config(page_title="Vitrine Imobiliária IA", layout="wide", initial_sidebar_state="expanded")
 
 # --- ÁREA DE CONFIGURAÇÃO DA IA (GRATUITA) ---
-# Você precisará colocar sua chave aqui depois
-GOOGLE_API_KEY = "AIzaSyAYnWiouYLCYHPZHHxImqpnMyHDE5j16-4" 
+GOOGLE_API_KEY = "AIzaSyAYnWiouYLCYHPZHHxImqpnMyHDE5j16-4"
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # --- ESTILO CSS PARA PARECER APP DE CELULAR ---
