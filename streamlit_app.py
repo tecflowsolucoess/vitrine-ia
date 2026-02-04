@@ -1,96 +1,69 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. SUA CHAVE DE ACESSO (MANTENHA EXATAMENTE ASSIM)
+# --- CONFIGURAÇÃO DA IA ---
+# Substitua pelo seu código de API real
 GOOGLE_API_KEY = "AIzaSyAYnWiouYLCYHPZHHxImqpnMyHDE5j16-4"
 genai.configure(api_key=GOOGLE_API_KEY)
+model = genai.GenerativeModel('gemini-1.5-flash')
 
-# CONFIGURAÇÃO DA PÁGINA
-st.set_page_config(page_title="Vitrine Imobiliária IA", layout="wide")
+# --- CONFIGURAÇÃO DA PÁGINA ---
+st.set_page_config(page_title="MeuCorretor - O Braço Direito do Corretor", layout="wide")
 
-# --- MENU LATERAL (A ESTRUTURA QUE VOCÊ DEFINIU) ---
-st.sidebar.title("🏗️ Painel do Corretor")
-menu = st.sidebar.radio("Navegação", 
-    ["📊 Dashboard", "➕ Cadastrar Imóvel", "🖼️ Gerenciador de Imóveis", "📱 Minha Vitrine (Bio)"])
+st.title("🏠 BrokerAI: Gestão e Vendas")
+st.sidebar.title("Menu de Ferramentas")
+opcao = st.sidebar.radio("O que vamos fazer agora?", 
+                         ["Gerador de Anúncios", "Qualificador de Leads", "Catálogo Rápido"])
 
-# --- 1. DASHBOARD (RESUMO) ---
-if menu == "📊 Dashboard":
-    st.header("Resumo do seu Negócio")
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Imóveis Ativos", "3")
-    col2.metric("Visualizações", "147")
-    col3.metric("Leads no WhatsApp", "12")
+# --- 1. GERADOR DE ANÚNCIOS (COM IA REAL) ---
+if opcao == "Gerador de Anúncios":
+    st.header("✍️ Gerador de Anúncios Magnéticos")
+    detalhes = st.text_area("Descreva o imóvel (ex: 2 quartos, suite, varanda gourmet, Moema)", height=150)
+    tom = st.selectbox("Tom de voz", ["Luxo/Sofisticado", "Urgência/Oportunidade", "Familiar/Aconchegante"])
     
-    st.markdown("---")
-    st.subheader("Últimas Atividades")
-    st.write("✅ Anúncio gerado para: Apartamento em Moema")
-    st.write("✅ Novo lead interessado na Casa de Condomínio")
-
-# --- 2. FORMULÁRIO DE CADASTRO INTELIGENTE ---
-elif menu == "➕ Cadastrar Imóvel":
-    st.header("Cadastrar Novo Imóvel")
-    
-    with st.form("cadastro_imovel"):
-        col1, col2 = st.columns(2)
-        with col1:
-            titulo = st.text_input("Título do Imóvel (ex: Apto Garden)")
-            tipo = st.selectbox("Tipo", ["Casa", "Apartamento", "Terreno", "Cobertura"])
-        with col2:
-            preco = st.text_input("Preço (R$)")
-            endereco = st.text_input("Endereço Completo")
-            
-        tags = st.text_area("Palavras-Chave (IA): O que o imóvel tem de especial? (ex: piscina, sol da manhã, perto do metrô)")
-        fotos = st.file_uploader("Upload de Fotos (Até 5)", accept_multiple_files=True)
-        
-        gerar_ia = st.form_submit_button("✨ SALVAR E GERAR DESCRIÇÃO COM IA")
-
-    if gerar_ia:
-        if not tags or not titulo:
-            st.warning("Preencha o título e as palavras-chave para a IA trabalhar.")
-        else:
-            with st.spinner('A IA está criando sua descrição de luxo...'):
+    if st.button("Gerar Texto com IA"):
+        if detalhes:
+            with st.spinner('A IA está criando seu anúncio...'):
                 try:
-                    model = genai.GenerativeModel('gemini-pro')
-                    prompt = f"Atue como um corretor experiente. Crie um anúncio magnético para um {tipo} chamado {titulo} que custa {preco}. Características: {tags}. Endereço: {endereco}. Termine com uma chamada para ação para o WhatsApp."
+                    prompt = f"Atue como um corretor experiente. Crie um anúncio persuasivo para {tom} com base nestes detalhes: {detalhes}. Use emojis e hashtags."
                     response = model.generate_content(prompt)
-                    
-                    st.success("Imóvel Cadastrado e Descrição Gerada!")
-                    st.markdown("### 📝 Descrição Sugerida:")
+                    st.success("Pronto! Aqui está o seu anúncio:")
                     st.write(response.text)
-                    st.info("Esta descrição ficará visível na sua Vitrine (Bio).")
                 except Exception as e:
-                    st.error(f"Erro ao conectar com a IA: {e}")
+                    st.error(f"Erro ao chamar a IA: {e}")
+        else:
+            st.warning("Por favor, descreva o imóvel primeiro.")
 
-# --- 3. GERENCIADOR DE IMÓVEIS ---
-elif menu == "🖼️ Gerenciador de Imóveis":
-    st.header("Seus Imóveis Cadastrados")
-    # Simulação de lista
-    col1, col2, col3 = st.columns([3, 1, 1])
-    col1.write("**Apartamento Moema** - R$ 850.000")
-    col2.button("Editar", key="ed1")
-    col3.button("Pausar", key="p1")
+# --- 2. QUALIFICADOR DE LEADS ---
+elif opcao == "Qualificador de Leads":
+    st.header("🎯 Qualificador de Clientes")
+    st.info("Simulação: Envie este link para o cliente antes de atender no WhatsApp.")
     
-    st.write("---")
-    col1, col2, col3 = st.columns([3, 1, 1])
-    col1.write("**Casa em Pinheiros** - R$ 1.500.000")
-    col2.button("Editar", key="ed2")
-    col3.button("Pausar", key="p2")
+    col1, col2 = st.columns(2)
+    with col1:
+        nome = st.text_input("Nome do Cliente")
+        renda = st.selectbox("Renda mensal aproximada", ["Até R$ 5k", "R$ 5k a 10k", "R$ 10k a 20k", "Acima de 20k"])
+    with col2:
+        pretensao = st.selectbox("Pretende comprar em quanto tempo?", ["Imediato", "3 a 6 meses", "Só pesquisando"])
+    
+    if st.button("Analisar Lead"):
+        if nome:
+            st.subheader("Resultado da Análise:")
+            if pretensao == "Imediato" and "Acima de 10k" in renda:
+                st.success(f"🔥 LEAD QUENTE: O cliente {nome} tem alto potencial. Ligue agora!")
+            else:
+                st.warning(f"⚡ LEAD MORNO: O cliente {nome} precisa de acompanhamento a longo prazo.")
+        else:
+            st.warning("Preencha o nome do cliente.")
 
-# --- 4. A VITRINE DO CLIENTE (O LINK DA BIO) ---
-elif menu == "📱 Minha Vitrine (Bio)":
-    st.header("Preview da sua Vitrine (Link da Bio)")
-    st.info("É assim que seu cliente verá seu perfil no celular.")
-    
-    st.markdown("""
-        <div style='text-align: center; background: white; padding: 20px; border-radius: 20px; border: 1px solid #ddd'>
-            <img src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png' width='100'>
-            <h2>Corretor de Sucesso</h2>
-            <p>CRECI: 12345-F</p>
-            <button style='background: #25D366; color: white; border: none; padding: 10px 20px; border-radius: 10px'>Falar no WhatsApp</button>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    st.subheader("Imóveis em Destaque")
-    st.image("https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500", caption="Casa de Luxo - R$ 2.500.000")
-    if st.button("Ver Detalhes do Imóvel"):
-        st.write("Aqui abriria a página detalhada com a descrição que a IA criou.")
+# --- 3. CATÁLOGO RÁPIDO ---
+elif opcao == "Catálogo Rápido":
+    st.header("📋 Meus Imóveis Cadastrados")
+    # Exemplo de mini banco de dados (simulado)
+    imoveis = [
+        {"Referência": "AP001", "Valor": "R$ 550.000", "Bairro": "Moema", "Status": "Disponível"},
+        {"Referência": "CA002", "Valor": "R$ 1.200.000", "Bairro": "Jardins", "Status": "Reservado"},
+        {"Referência": "AP003", "Valor": "R$ 320.000", "Bairro": "Itaquera", "Status": "Disponível"}
+    ]
+    st.table(imoveis)
+    st.button("Cadastrar Novo Imóvel (Em breve)")
